@@ -9,12 +9,6 @@ public class Main {
         StudentManagerImpl studentManager = new StudentManagerImpl();
         studentManager.createTable(); // Init on program start
 
-        studentManager.displayAllStudents().forEach(student -> {
-            System.out.println(student.getName() + " with grade: " + student.getGrade());
-        });
-
-        System.out.println(studentManager.calculateAverageGrade());
-
         SwingUtilities.invokeLater(() -> {
             MainPanel frame = new MainPanel();
             frame.setVisible(true);

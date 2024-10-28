@@ -14,6 +14,10 @@ public interface StudentManager {
     default void removeStudent(String id) {
     }
 
+    default Student getStudentById(String id) {
+        return null;
+    }
+
     default ArrayList<Student> displayAllStudents() {
         return null;
     }

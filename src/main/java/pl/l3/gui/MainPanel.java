@@ -4,7 +4,9 @@ import pl.l3.domain.Student;
 import pl.l3.service.StudentManagerImpl;
 
 import javax.swing.*;
-import java.util.List;
+import java.awt.*;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 import java.util.UUID;
 
 import static java.lang.Double.parseDouble;
@@ -14,9 +16,6 @@ public class MainPanel extends JFrame {
 
     private StudentManagerImpl studentManager = new StudentManagerImpl();
 
-    // Sample Student Data
-    private List<String> studentNames = List.of("Alice", "Bob", "Charlie", "Diana", "Evan");
-
     private JPanel main_panel;
     private JButton addStudentButton;
     private JButton avgGradesButton;
@@ -25,8 +24,14 @@ public class MainPanel extends JFrame {
     private JTextField gradeField;
     private JScrollPane studentScrollPane;
     private JLabel averageLabel;
+    private JButton deleteStudentButton;
+    private JButton editModeButton;
+    private JButton saveButton;
     private JList studentList;
+
     private boolean displayAverage = false;
+    private String currentlySelected; // Only student id
+    private String mode; // Either "create" or "edit"
 
 
     public MainPanel() {
@@ -34,8 +39,18 @@ public class MainPanel extends JFrame {
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
         this.initStudentList();
-        ;
         this.initEventListeners();
+
+        this.mode = "create";
+        this.addStudentButton.setBackground(Color.LIGHT_GRAY);
+
+        this.currentlySelected = this.studentManager
+                .displayAllStudents()
+                .stream()
+                .findFirst()
+                .map(Student::getStudentID)
+                .orElse(null);
+
 
         setContentPane(main_panel);
         pack();
@@ -44,6 +59,7 @@ public class MainPanel extends JFrame {
     private void initStudentList() {
         studentList = returnStudentList();
         studentList.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
+        studentList.setCellRenderer(new StudentCellRenderer());
         studentScrollPane.setViewportView(studentList);
     }
 
@@ -51,27 +67,44 @@ public class MainPanel extends JFrame {
         return new JList<>(
                 this.studentManager
                         .displayAllStudents()
-                        .stream()
-                        .map(student -> {
-                            return "Age: " + student.getAge() + " | Grade: " + student.getGrade() + " | Name: " + student.getName();
-                        })
                         .toArray()
         );
     }
 
     private void initEventListeners() {
-        this.addStudentButton.addActionListener(e -> saveNewStudent());
+        this.saveButton.addActionListener(e -> {
+            if (this.mode.equals("create")) {
+                saveNewStudent();
+            } else {
+                saveEditedStudent();
+            }
+        });
+        this.addStudentButton.addActionListener(e -> toggleCreationMode());
+        this.editModeButton.addActionListener(e -> toggleEditMode());
         this.avgGradesButton.addActionListener(e -> toggleAverage());
+
+        studentList.addMouseListener(new MouseAdapter() {
+            @Override
+            public void mouseClicked(MouseEvent e) {
+                if (mode.equals("create")) {
+                    return;
+                }
+
+                int index = studentList.locationToIndex(e.getPoint());
+                System.out.println(index);
+                if (index >= 0) {
+                    Student student = (Student) studentList.getModel().getElementAt(index);
+                    currentlySelected = student.getStudentID();
+                    nameField.setText(student.getName());
+                    ageField.setText(String.valueOf(student.getAge()));
+                    gradeField.setText(String.valueOf(student.getGrade()));
+                }
+            }
+        });
     }
 
     private void saveNewStudent() {
-        if (this.nameField.getText().isEmpty() || this.ageField.getText().isEmpty() || this.gradeField.getText().isEmpty()) {
-            JOptionPane.showMessageDialog(
-                    this,
-                    "Input fields cannot be empty.",
-                    "Validation Error",
-                    JOptionPane.ERROR_MESSAGE
-            );
+        if (emptyFieldValidator()) {
             return;
         }
 
@@ -80,6 +113,59 @@ public class MainPanel extends JFrame {
         int age = parseInt(this.ageField.getText());
         double grade = parseDouble(this.gradeField.getText());
 
+        if (ageFieldValidator(age)) {
+            return;
+        }
+
+        if (gradeFieldValidator(grade)) {
+            return;
+        }
+
+        Student newStudent = new Student(uuid, name, age, grade);
+        this.studentManager.addStudent(newStudent);
+        this.initStudentList(); // Reinitialize student list for visual feedback
+        this.nameField.setText(" ");
+        this.ageField.setText(" ");
+        this.gradeField.setText(" ");
+    }
+
+    private void saveEditedStudent() {
+        if (emptyFieldValidator()) {
+            return;
+        }
+
+        String name = this.nameField.getText();
+        int age = parseInt(this.ageField.getText());
+        double grade = parseDouble(this.gradeField.getText());
+
+        if (ageFieldValidator(age)) {
+            return;
+        }
+
+        if (gradeFieldValidator(grade)) {
+            return;
+        }
+
+        Student studentToEdit = new Student(currentlySelected, name, age, grade);
+        studentManager.updateStudent(studentToEdit);
+        //this.initStudentList(); // Reinitialize student list for visual feedback
+    }
+
+    private boolean emptyFieldValidator() {
+        if (this.nameField.getText().isEmpty() || this.ageField.getText().isEmpty() || this.gradeField.getText().isEmpty()) {
+            JOptionPane.showMessageDialog(
+                    this,
+                    "Input fields cannot be empty.",
+                    "Validation Error",
+                    JOptionPane.ERROR_MESSAGE
+            );
+            return true;
+        } else {
+            return false;
+        }
+    }
+
+    private boolean ageFieldValidator(int age) {
         if (age < 0 || age > 120) {
             JOptionPane.showMessageDialog(
                     this,
@@ -87,9 +173,13 @@ public class MainPanel extends JFrame {
                     "Validation Error",
                     JOptionPane.ERROR_MESSAGE
             );
-        return;
+            return true;
+        } else {
+            return false;
         }
+    }
 
+    private boolean gradeFieldValidator(double grade) {
         if (grade < 0.0 || grade > 100.0) {
             JOptionPane.showMessageDialog(
                     this,
@@ -97,12 +187,34 @@ public class MainPanel extends JFrame {
                     "Validation Error",
                     JOptionPane.ERROR_MESSAGE
             );
-            return;
+            return true;
+        } else {
+            return false;
         }
+    }
 
-        Student newStudent = new Student(uuid, name, age, grade);
-        this.studentManager.addStudent(newStudent);
-        this.initStudentList(); // Reinitialize student list for visual feedback
+    private void toggleCreationMode() {
+        this.mode = "create";
+        this.addStudentButton.setBackground(Color.LIGHT_GRAY);
+        this.editModeButton.setBackground(UIManager.getColor("Button.background"));
+
+        this.nameField.setText(" ");
+        this.ageField.setText(" ");
+        this.gradeField.setText(" ");
+    }
+
+    private void toggleEditMode() {
+        this.mode = "edit";
+        this.addStudentButton.setBackground(UIManager.getColor("Button.background"));
+        this.editModeButton.setBackground(Color.LIGHT_GRAY);
+
+        Student student = this.studentManager.getStudentById(this.currentlySelected);
+
+        if (student != null) {
+            this.nameField.setText(student.getName());
+            this.ageField.setText(String.valueOf(student.getAge()));
+            this.gradeField.setText(String.valueOf(student.getGrade()));
+        }
     }
 
     private void toggleAverage() {
@@ -115,4 +227,5 @@ public class MainPanel extends JFrame {
         }
 
     }
+
 }

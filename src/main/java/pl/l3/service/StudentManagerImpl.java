@@ -14,7 +14,7 @@ public class StudentManagerImpl implements StudentManager {
     private String GET_ALL_STUDENTS_QUERY = "SELECT * FROM students";
     private String UPDATE_STUDENT_QUERY = "UPDATE students SET name = ?, age = ?, grade = ? WHERE studentID = ?";
     private String DELETE_STUDENT_QUERY = "DELETE FROM students WHERE studentID = ?";
-
+    private String GET_STUDENT_BY_ID_QUERY = "SELECT * FROM students WHERE studentID = ?";
     public void createTable() {
         String createTableSQL = "CREATE TABLE IF NOT EXISTS students (" +
                 "studentID TEXT PRIMARY KEY," +
@@ -79,6 +79,32 @@ public class StudentManagerImpl implements StudentManager {
         } catch (SQLException e) {
             e.printStackTrace(); //Should ignore warning for now, stacktrace is enough.
         }
+    }
+
+    @Override
+    public Student getStudentById(String id) {
+        Student student = null;
+        try (
+                Connection connection = DriverManager.getConnection(URL);
+                PreparedStatement preparedStatement = connection.prepareStatement(GET_STUDENT_BY_ID_QUERY)
+        ) {
+            preparedStatement.setString(1, id);
+
+            try (ResultSet resultSet = preparedStatement.executeQuery()) {
+                if (resultSet.next()) {
+                    student = new Student(
+                            resultSet.getString("studentID"),
+                            resultSet.getString("name"),
+                            resultSet.getInt("age"),
+                            resultSet.getDouble("grade")
+                    );
+                }
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
+        return student;
     }
 
     @Override
