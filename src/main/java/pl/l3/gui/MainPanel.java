@@ -72,16 +72,17 @@ public class MainPanel extends JFrame {
     }
 
     private void initEventListeners() {
-        this.saveButton.addActionListener(e -> {
-            if (this.mode.equals("create")) {
+        saveButton.addActionListener(e -> {
+            if (mode.equals("create")) {
                 saveNewStudent();
             } else {
                 saveEditedStudent();
             }
         });
-        this.addStudentButton.addActionListener(e -> toggleCreationMode());
-        this.editModeButton.addActionListener(e -> toggleEditMode());
-        this.avgGradesButton.addActionListener(e -> toggleAverage());
+        addStudentButton.addActionListener(e -> toggleCreationMode());
+        editModeButton.addActionListener(e -> toggleEditMode());
+        deleteStudentButton.addActionListener(e -> deleteStudent());
+        avgGradesButton.addActionListener(e -> toggleAverage());
 
         studentList.addMouseListener(new MouseAdapter() {
             @Override
@@ -148,7 +149,15 @@ public class MainPanel extends JFrame {
 
         Student studentToEdit = new Student(currentlySelected, name, age, grade);
         studentManager.updateStudent(studentToEdit);
-        //this.initStudentList(); // Reinitialize student list for visual feedback
+        this.initStudentList(); // Reinitialize student list for visual feedback
+    }
+
+    private void deleteStudent() {
+        studentManager.removeStudent(currentlySelected);
+        this.initStudentList(); // Reinitialize student list for visual feedback
+        this.nameField.setText(" ");
+        this.ageField.setText(" ");
+        this.gradeField.setText(" ");
     }
 
     private boolean emptyFieldValidator() {
