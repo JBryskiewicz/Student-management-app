@@ -33,7 +33,8 @@ public class MainPanel extends JFrame {
         setTitle("Student Management");
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
-        this.initStudentList();;
+        this.initStudentList();
+        ;
         this.initEventListeners();
 
         setContentPane(main_panel);
@@ -64,13 +65,42 @@ public class MainPanel extends JFrame {
     }
 
     private void saveNewStudent() {
+        if (this.nameField.getText().isEmpty() || this.ageField.getText().isEmpty() || this.gradeField.getText().isEmpty()) {
+            JOptionPane.showMessageDialog(
+                    this,
+                    "Input fields cannot be empty.",
+                    "Validation Error",
+                    JOptionPane.ERROR_MESSAGE
+            );
+            return;
+        }
+
         String uuid = UUID.randomUUID().toString();
-        Student newStudent = new Student(
-                uuid,
-                this.nameField.getText(),
-                parseInt(this.ageField.getText()),
-                parseDouble(this.gradeField.getText())
-        );
+        String name = this.nameField.getText();
+        int age = parseInt(this.ageField.getText());
+        double grade = parseDouble(this.gradeField.getText());
+
+        if (age < 0 || age > 120) {
+            JOptionPane.showMessageDialog(
+                    this,
+                    "Age cannot be negative or above 120 years old.",
+                    "Validation Error",
+                    JOptionPane.ERROR_MESSAGE
+            );
+        return;
+        }
+
+        if (grade < 0.0 || grade > 100.0) {
+            JOptionPane.showMessageDialog(
+                    this,
+                    "Grade must be in range of 0 to 100.",
+                    "Validation Error",
+                    JOptionPane.ERROR_MESSAGE
+            );
+            return;
+        }
+
+        Student newStudent = new Student(uuid, name, age, grade);
         this.studentManager.addStudent(newStudent);
         this.initStudentList(); // Reinitialize student list for visual feedback
     }
