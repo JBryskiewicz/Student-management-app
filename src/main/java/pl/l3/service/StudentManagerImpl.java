@@ -9,12 +9,16 @@ import java.util.ArrayList;
 
 public class StudentManagerImpl implements StudentManager {
 
-    private static final String URL = "jdbc:sqlite:students.db";
-    private String ADD_STUDENT_QUERY = "INSERT INTO students(studentID, name, age, grade) VALUES(?, ?, ?, ?)";
-    private String GET_ALL_STUDENTS_QUERY = "SELECT * FROM students";
-    private String UPDATE_STUDENT_QUERY = "UPDATE students SET name = ?, age = ?, grade = ? WHERE studentID = ?";
-    private String DELETE_STUDENT_QUERY = "DELETE FROM students WHERE studentID = ?";
-    private String GET_STUDENT_BY_ID_QUERY = "SELECT * FROM students WHERE studentID = ?";
+
+    /** Query constants */
+    private static final String URL = "jdbc:sqlite:students.db"; // Shouldn't be here
+    private static final String ADD_STUDENT_QUERY = "INSERT INTO students(studentID, name, age, grade) VALUES(?, ?, ?, ?)";
+    private static final String GET_ALL_STUDENTS_QUERY = "SELECT * FROM students";
+    private static final String UPDATE_STUDENT_QUERY = "UPDATE students SET name = ?, age = ?, grade = ? WHERE studentID = ?";
+    private static final String DELETE_STUDENT_QUERY = "DELETE FROM students WHERE studentID = ?";
+    private static final String GET_STUDENT_BY_ID_QUERY = "SELECT * FROM students WHERE studentID = ?";
+
+    /** Creates new SQL table if it doesn't exit */
     public void createTable() {
         String createTableSQL = "CREATE TABLE IF NOT EXISTS students (" +
                 "studentID TEXT PRIMARY KEY," +
@@ -31,6 +35,7 @@ public class StudentManagerImpl implements StudentManager {
         }
     }
 
+    /** Connects to DB in order to save new student according to SQL query */
     @Override
     public void addStudent(Student student) {
         System.out.println("Adding Student");
@@ -48,6 +53,7 @@ public class StudentManagerImpl implements StudentManager {
         }
     }
 
+    /** Connects to DB in order to save modified student according to SQL query */
     @Override
     public void updateStudent(Student student) {
         System.out.println("Updating Student");
@@ -67,6 +73,7 @@ public class StudentManagerImpl implements StudentManager {
         }
     }
 
+    /** Connects to DB in order to delete student by id according to SQL query */
     @Override
     public void removeStudent(String id) {
         System.out.println("Removing Student");
@@ -81,6 +88,7 @@ public class StudentManagerImpl implements StudentManager {
         }
     }
 
+    /** Connects to DB in order to read student by id according to SQL query */
     @Override
     public Student getStudentById(String id) {
         Student student = null;
@@ -107,6 +115,7 @@ public class StudentManagerImpl implements StudentManager {
         return student;
     }
 
+    /** Connects to DB in order to read all student according to SQL query */
     @Override
     public ArrayList<Student> displayAllStudents() {
         System.out.println("displaying all");
@@ -133,6 +142,7 @@ public class StudentManagerImpl implements StudentManager {
         return students;
     }
 
+    /** Uses displayAllStudents() in order to get all student grades, calculate and return grade average */
     @Override
     public double calculateAverageGrade() {
        return BigDecimal.valueOf(this.displayAllStudents()

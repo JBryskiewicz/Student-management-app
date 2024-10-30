@@ -10,6 +10,9 @@ public class StudentCellRenderer extends JPanel implements ListCellRenderer<Stud
     private JLabel ageLabel;
     private JLabel gradeLabel;
 
+    /** Constructor initializes row of JList's option (cell).
+     *  Sets grid layout, borders and label elements.
+     */
     public StudentCellRenderer() {
         setLayout(new GridLayout(1, 3));
         nameLabel = new JLabel();
@@ -25,6 +28,7 @@ public class StudentCellRenderer extends JPanel implements ListCellRenderer<Stud
         add(ageLabel);
     }
 
+    /** Manages row of JList's option (cell) by assigning values to labels. Also handles selection colors and returns component to the list. */
     @Override
     public Component getListCellRendererComponent(JList<? extends Student> list, Student student, int index, boolean isSelected, boolean cellHasFocus) {
         nameLabel.setText(student.getName());

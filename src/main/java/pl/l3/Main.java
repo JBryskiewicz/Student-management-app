@@ -7,7 +7,7 @@ import javax.swing.*;
 public class Main {
     public static void main(String[] args) {
         StudentManagerImpl studentManager = new StudentManagerImpl();
-        studentManager.createTable(); // Init on program start
+        studentManager.createTable(); // Init on program start!
 
         SwingUtilities.invokeLater(() -> {
             MainPanel frame = new MainPanel();

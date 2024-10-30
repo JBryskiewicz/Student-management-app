@@ -30,11 +30,12 @@ public class MainPanel extends JFrame {
     private JList studentList;
 
     private boolean displayAverage = false;
-    private String currentlySelectedID; // Only student id
-    private int currentlySelectedIndex; //List option index
-    private String mode; // Either "create" or "edit"
+    private String currentlySelectedID; // Student id
+    private int currentlySelectedIndex; // List option index
+    private String mode; // Either "create" or "edit" mode for student manager
 
 
+    /** Constructor. Sets initial state for main panel window. */
     public MainPanel() {
         setTitle("Student Management");
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -43,6 +44,7 @@ public class MainPanel extends JFrame {
         this.initEventListeners();
 
         mode = "create";
+
         this.addStudentButton.setBackground(Color.LIGHT_GRAY);
 
         this.selectFirstStudent();
@@ -51,6 +53,7 @@ public class MainPanel extends JFrame {
         pack();
     }
 
+    /** Setup all data to for this component to logically and visually select first student on the List */
     private void selectFirstStudent() {
         this.currentlySelectedID = this.studentManager
                 .displayAllStudents()
@@ -62,6 +65,7 @@ public class MainPanel extends JFrame {
         this.studentList.setSelectedIndex(this.currentlySelectedIndex);
     }
 
+    /** Initializes student list component on view with data taken from database. */
     private void initStudentList() {
         DefaultListModel<Student> model = new DefaultListModel<>();
 
@@ -76,20 +80,18 @@ public class MainPanel extends JFrame {
         }
     }
 
+    /** Refreshes student list whenever called by refilling view with students from database. */
     private void refreshStudentList() {
         DefaultListModel<Student> model = (DefaultListModel<Student>) studentList.getModel();
         model.clear();
         studentManager.displayAllStudents().forEach(model::addElement);
     }
 
-    private JList returnStudentList() {
-        return new JList<>(
-                this.studentManager
-                        .displayAllStudents()
-                        .toArray()
-        );
-    }
-
+    /** Initializes all event listeners on the main panel.
+     *  For save button it chooses method to handle click based on current view's mode (create or edit student mode).
+     *  MouseClicked event on studentList overrides default behaviour to allow student selection for certain operations
+     *  like Delete or Edit.
+     */
     private void initEventListeners() {
         saveButton.addActionListener(e -> {
             if (mode.equals("create")) {
@@ -121,6 +123,7 @@ public class MainPanel extends JFrame {
         });
     }
 
+    /** Handles saving new student to database with field validation, popout messages and auto selection. */
     private void saveNewStudent() {
         if (emptyFieldValidator()) {
             return;
@@ -160,6 +163,7 @@ public class MainPanel extends JFrame {
         );
     }
 
+    /** Handles student editing, saves result to database with field validation, popout messages and auto self-selection. */
     private void saveEditedStudent() {
         if (studentList.getModel().getSize() < 1) {
             JOptionPane.showMessageDialog(
@@ -201,6 +205,7 @@ public class MainPanel extends JFrame {
         );
     }
 
+    /** Handles student deletion from database with popout messages and auto selection post delete. */
     private void deleteStudent() {
         if (studentList.getModel().getSize() < 1) {
             JOptionPane.showMessageDialog(
@@ -244,6 +249,7 @@ public class MainPanel extends JFrame {
         }
     }
 
+    /** Validates if input fields are not empty. Returns boolean value if validation passed. */
     private boolean emptyFieldValidator() {
         if (this.nameField.getText().isEmpty() || this.ageField.getText().isEmpty() || this.gradeField.getText().isEmpty()) {
             JOptionPane.showMessageDialog(
@@ -258,6 +264,7 @@ public class MainPanel extends JFrame {
         }
     }
 
+    /** Validates if age field is an integer within desired range. Returns boolean value if validation passed. */
     private boolean ageFieldValidator(String ageString) {
         try {
             int age = Integer.parseInt(ageString);
@@ -283,6 +290,7 @@ public class MainPanel extends JFrame {
         }
     }
 
+    /** Validates if grade field is a double within desired range. Returns boolean value if validation passed. */
     private boolean gradeFieldValidator(String gradeString) {
         try {
             double grade = Double.parseDouble(gradeString);
@@ -308,6 +316,9 @@ public class MainPanel extends JFrame {
         }
     }
 
+    /** Toggles view mode to "create" and sets up visual feedback to mark what mode is on. Additionally, clears input fields
+     * to allow clean input of new user.
+     */
     private void toggleCreationMode() {
         System.out.println("Toggling Creation Mode!");
 
@@ -322,6 +333,9 @@ public class MainPanel extends JFrame {
         saveButton.setText("Save");
     }
 
+    /** Toggles view mode to "edit" and sets up visual feedback to mark what mode is on. Additionally, fills input fields
+     * with currently selected student's data to allow easy modification.
+     */
     private void toggleEditMode() {
         System.out.println("Toggling Edit Mode!");
         this.mode = "edit";
@@ -339,6 +353,7 @@ public class MainPanel extends JFrame {
         }
     }
 
+    /** Toggles visibility for calculated average grade of every student on the list. */
     private void toggleAverage() {
         if (!this.displayAverage) {
             this.averageLabel.setText("Average: " + Double.toString(this.studentManager.calculateAverageGrade()));
