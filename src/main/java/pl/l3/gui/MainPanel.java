@@ -161,6 +161,16 @@ public class MainPanel extends JFrame {
     }
 
     private void saveEditedStudent() {
+        if (studentList.getModel().getSize() < 1) {
+            JOptionPane.showMessageDialog(
+                    this,
+                    "No students to modify.",
+                    "Notification",
+                    JOptionPane.INFORMATION_MESSAGE
+            );
+            return;
+        }
+
         if (emptyFieldValidator()) {
             return;
         }
@@ -192,6 +202,16 @@ public class MainPanel extends JFrame {
     }
 
     private void deleteStudent() {
+        if (studentList.getModel().getSize() < 1) {
+            JOptionPane.showMessageDialog(
+                    this,
+                    "No students to delete.",
+                    "Notification",
+                    JOptionPane.INFORMATION_MESSAGE
+            );
+            return;
+        }
+
         int response = JOptionPane.showConfirmDialog(
                 this,
                 "Are you sure you want to delete this student?",
