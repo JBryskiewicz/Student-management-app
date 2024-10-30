@@ -32,14 +32,13 @@ public class StudentCellRenderer extends JPanel implements ListCellRenderer<Stud
         gradeLabel.setText("Grade: " + student.getGrade());
 
         if (isSelected) {
-            setBackground(Color.LIGHT_GRAY); // Change to any color you prefer
+            setBackground(Color.LIGHT_GRAY);
             setForeground(Color.BLACK);
         } else {
             setBackground(Color.WHITE);
             setForeground(Color.BLACK);
         }
 
-        // Enable opaque to ensure background color is visible
         setOpaque(true);
 
         return this;
