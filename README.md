@@ -17,9 +17,14 @@ This application utilizes a SQLite database to store student data persistently.
 - SQLite database.
 
 ## Compilation and Running Instructions
+1. Fork the Project: Start by forking the Student Management System repository from GitHub.
 
-1. **Clone the Repository**:
-   ```bash
-   git clone https://github.com/yourusername/student-management-system.git
-   cd student-management-system
-   <work in progress>
+2. Clone the Fork: Once you've forked the project, clone your forked repository to your local machine using the following command in your terminal:
+```bash
+git clone https://github.com/your-username/student-management-system.git
+(Replace your-username with your GitHub username.)
+```
+
+3. It is recommended to use IntelliJ IDEA for this project in order to run it.
+
+4. Download and set up SQLite if you haven't already. 
