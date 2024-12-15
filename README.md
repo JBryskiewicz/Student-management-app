@@ -27,4 +27,6 @@ git clone https://github.com/your-username/student-management-system.git
 
 3. It is recommended to use IntelliJ IDEA for this project in order to run it.
 
-4. Download and set up SQLite if you haven't already. 
+4. Download and set up SQLite if you haven't already.
+
+5. Run program by running application's main method from IDE. All Database tables should be created upon first application's run.
